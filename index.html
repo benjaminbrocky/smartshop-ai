@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartShop AI - Curated Product Recommendations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF9900;
+            --primary-dark: #E8890C;
+            --secondary: #232F3E;
+            --accent: #00A8E1;
+            --success: #2ECC71;
+            --bg: #FAFBFC;
+            --surface: #FFFFFF;
+            --text: #0F1111;
+            --text-secondary: #565959;
+            --border: #D5D9D9;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+            --gradient: linear-gradient(135deg, #FF9900 0%, #FFB84D 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.625rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #232F3E 0%, #1a2634 100%);
+            color: white;
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255,153,0,0.15) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,153,0,0.2);
+            border: 1px solid rgba(255,153,0,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.6s ease-out 0.1s both;
+        }
+
+        .hero h1 .highlight {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #b8c5d6;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            animation: slideIn 0.6s ease-out 0.2s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            animation: slideIn 0.6s ease-out 0.3s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            animation: slideIn 0.6s ease-out 0.4s both;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #8c9aad;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            height: 500px;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-lg);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            width: 280px;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 40%;
+            right: 5%;
+            animation-delay: 2s;
+            width: 240px;
+        }
+
+        .floating-card:nth-child(3) {
+            bottom: 10%;
+            left: 20%;
+            animation-delay: 4s;
+            width: 260px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .product-mini {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-mini img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+
+        .product-mini-info h4 {
+            font-size: 0.875rem;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .product-mini-info .price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .product-mini-info .rating {
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+
+        /* Search Bar */
+        .search-section {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-top: -3rem;
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid var(--border);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,153,0,0.1);
+        }
+
+        /* Categories */
+        .categories {
+            padding: 5rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFECD2 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .category-card h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .category-card span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Featured Products */
+        .featured {
+            background: white;
+            padding: 5rem 2rem;
+        }
+
+        .featured-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .product-image {
+            height: 240px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to top, rgba(0,0,0,0.05), transparent);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .product-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: var(--primary);
+            font-size: 0.875rem;
+        }
+
+        .reviews {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .price {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-current {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .price-original {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        /* Blog Section */
+        .blog {
+            padding: 5rem 2rem;
+            background: linear-gradient(180deg, var(--bg) 0%, white 100%);
+        }
+
+        .blog-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .blog-card {
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .blog-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+        }
+
+        .blog-image.ai-generated {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-tag {
+            display: inline-block;
+            background: rgba(0,168,225,0.1);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .blog-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .blog-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .blog-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .read-time {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: var(--secondary);
+            color: white;
+            padding: 5rem 2rem;
+        }
+
+        .steps-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .step p {
+            color: #8c9aad;
+            line-height: 1.6;
+        }
+
+        /* Revenue Section */
+        .revenue {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .revenue-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .revenue-chart {
+            background: var(--bg);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            height: 300px;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+        }
+
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, var(--primary), #FFB84D);
+            border-radius: 8px 8px 0 0;
+            transition: all 0.6s ease;
+            position: relative;
+            min-height: 20px;
+        }
+
+        .bar:hover {
+            filter: brightness(1.1);
+        }
+
+        .bar-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .revenue-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .revenue-info > p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .income-streams {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .stream {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .stream-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stream-details h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .stream-details p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .stream-earnings {
+            margin-left: auto;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: #8c9aad;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .footer-links h4 {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: #8c9aad;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 0.9375rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: #8c9aad;
+            font-size: 0.875rem;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-cta {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .revenue-container {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading State */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-bolt"></i>
+                Smart<span>Shop</span> AI
+            </a>
+            <div class="nav-links">
+                <a href="#categories">Categories</a>
+                <a href="#featured">Top Picks</a>
+                <a href="#blog">Buying Guides</a>
+                <a href="#revenue">Earnings</a>
+                <button class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Get Started
+                </button>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-robot"></i>
+                    AI-Powered Recommendations
+                </div>
+                <h1>
+                    Find the Best Products with <span class="highlight">AI Precision</span>
+                </h1>
+                <p>
+                    Discover curated Amazon products across 47+ categories. Our AI analyzes thousands of reviews to recommend only the best.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" onclick="scrollToSection('categories')">
+                        <i class="fas fa-search"></i>
+                        Browse Categories
+                    </button>
+                    <button class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3);">
+                        <i class="fas fa-play-circle"></i>
+                        How It Works
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-value">47+</span>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">10k+</span>
+                        <span class="stat-label">Products</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">AI</span>
+                        <span class="stat-label">Powered</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <div class="product-mini">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <div class="product-mini-info">
+                            <h4>Breville Barista Pro</h4>
+                            <div class="price">$799.95</div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                4.8
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <div class="product-mini">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #f093fb, #f5576c); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="product-mini-info">
+                            <h4>Home Gym Set</h4>
+                            <div class="price">$299.00</div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                4.9
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <div class="product-mini">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4facfe, #00f2fe); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <div class="product-mini-info">
+                            <h4>Smart Pet Feeder</h4>
+                            <div class="price">$149.99</div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                4.2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search for products, categories, or buying guides..." id="searchInput">
+            <button class="btn btn-primary" onclick="handleSearch()">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <section class="categories" id="categories">
+        <div class="section-header fade-in">
+            <h2>Explore 47+ Categories</h2>
+            <p>From home essentials to tech gadgets, find expert-curated products in every niche</p>
+        </div>
+        <div class="category-grid" id="categoryGrid">
+            <!-- Categories injected by JS -->
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured" id="featured">
+        <div class="featured-container">
+            <div class="section-header fade-in">
+                <h2>Today's Top Picks</h2>
+                <p>AI-selected products with the highest ratings and best value</p>
+            </div>
+            <div class="product-grid" id="productGrid">
+                <!-- Products injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="blog" id="blog">
+        <div class="blog-container">
+            <div class="section-header fade-in">
+                <h2>AI-Generated Buying Guides</h2>
+                <p>SEO-optimized content that helps visitors make informed decisions</p>
+            </div>
+            <div class="blog-grid" id="blogGrid">
+                <!-- Blog posts injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="steps-container">
+            <div class="section-header fade-in">
+                <h2 style="color: white;">How SmartShop AI Works</h2>
+                <p style="color: #8c9aad;">From automated imports to commission earnings</p>
+            </div>
+            <div class="steps">
+                <div class="step fade-in">
+                    <div class="step-number">1</div>
+                    <h3>Auto Import</h3>
+                    <p>Products sync from Amazon every 24 hours via API. Prices, ratings, and availability stay current automatically.</p>
+                </div>
+                <div class="step fade-in">
+                    <div class="step-number">2</div>
+                    <h3>AI Content</h3>
+                    <p>Gemini AI writes SEO-optimized buying guides and comparison articles tailored to each category.</p>
+                </div>
+                <div class="step fade-in">
+                    <div class="step-number">3</div>
+                    <h3>Visitor Clicks</h3>
+                    <p>Users find your content via Google search and click your affiliate links to shop on Amazon.</p>
+                </div>
+                <div class="step fade-in">
+                    <div class="step-number">4</div>
+                    <h3>You Earn</h3>
+                    <p>Amazon places a 24-hour cookie. You earn 4-15% commission on everything they buy, not just the linked product.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revenue Section -->
+    <section class="revenue" id="revenue">
+        <div class="revenue-container">
+            <div class="revenue-info fade-in">
+                <h2>Multiple Income Streams</h2>
+                <p>Your affiliate site generates revenue through diverse channels, creating a stable passive income portfolio.</p>
+                
+                <div class="income-streams">
+                    <div class="stream">
+                        <div class="stream-icon" style="color: var(--primary);">
+                            <i class="fab fa-amazon"></i>
+                        </div>
+                        <div class="stream-details">
+                            <h4>Amazon Commissions</h4>
+                            <p>4-15% on every sale</p>
+                        </div>
+                        <div class="stream-earnings">$100-5k/mo</div>
+                    </div>
+                    <div class="stream">
+                        <div class="stream-icon" style="color: var(--accent);">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="stream-details">
+                            <h4>Digital Products</h4>
+                            <p>Sell guides & checklists</p>
+                        </div>
+                        <div class="stream-earnings">$50-500/mo</div>
+                    </div>
+                    <div class="stream">
+                        <div class="stream-icon" style="color: var(--success);">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stream-details">
+                            <h4>Email Newsletter</h4>
+                            <p>Build a monetized list</p>
+                        </div>
+                        <div class="stream-earnings">$100-1k/mo</div>
+                    </div>
+                    <div class="stream">
+                        <div class="stream-icon" style="color: #9b59b6;">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="stream-details">
+                            <h4>Sponsored Posts</h4>
+                            <p>Brands pay for reviews</p>
+                        </div>
+                        <div class="stream-earnings">$50-500/post</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="revenue-chart fade-in">
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Projected Growth Timeline</h3>
+                <div class="chart-bar">
+                    <div class="bar-group">
+                        <div class="bar" style="height: 15%;" data-height="15%">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.875rem;">$5</div>
+                        </div>
+                        <span class="bar-label">Month 1-2</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 25%;" data-height="25%">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.875rem;">$50</div>
+                        </div>
+                        <span class="bar-label">Month 3-4</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 45%;" data-height="45%">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.875rem;">$200</div>
+                        </div>
+                        <span class="bar-label">Month 6</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 70%;" data-height="70%">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.875rem;">$1k</div>
+                        </div>
+                        <span class="bar-label">Month 12</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 100%;" data-height="100%">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.875rem;">$5k+</div>
+                        </div>
+                        <span class="bar-label">Year 2+</span>
+                    </div>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); font-size: 0.875rem; margin-top: 1rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Conservative estimates based on consistent traffic growth
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt"></i>
+                    Smart<span>Shop</span> AI
+                </a>
+                <p>AI-powered affiliate marketing platform that curates the best Amazon products and generates passive income through automated content.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="#">Home & Kitchen</a></li>
+                    <li><a href="#">Tech & Gadgets</a></li>
+                    <li><a href="#">Fitness</a></li>
+                    <li><a href="#">Pets</a></li>
+                    <li><a href="#">Coffee</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Buying Guides</a></li>
+                    <li><a href="#">Reviews</a></li>
+                    <li><a href="#">Comparisons</a></li>
+                    <li><a href="#">Deals</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Affiliate Disclosure</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p> SmartShop AI. As an Amazon Associate, we earn from qualifying purchases. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data
+        const categories = [
+            { name: 'Coffee', icon: 'fa-coffee', count: '124 products' },
+            { name: 'Home Gym', icon: 'fa-dumbbell', count: '89 products' },
+            { name: 'Pets', icon: 'fa-paw', count: '156 products' },
+            { name: 'Gaming', icon: 'fa-gamepad', count: '203 products' },
+            { name: 'Kitchen', icon: 'fa-utensils', count: '178 products' },
+            { name: 'Tech', icon: 'fa-laptop', count: '245 products' },
+            { name: 'Outdoor', icon: 'fa-campground', count: '134 products' },
+            { name: 'Beauty', icon: 'fa-magic', count: '167 products' },
+            { name: 'Books', icon: 'fa-book', count: '312 products' },
+            { name: 'Toys', icon: 'fa-puzzle-piece', count: '198 products' },
+            { name: 'Audio', icon: 'fa-headphones', count: '87 products' },
+            { name: 'Smart Home', icon: 'fa-home', count: '145 products' }
+        ];
+
+        const products = [
+            {
+                title: 'Breville Barista Pro Espresso Machine',
+                category: 'Coffee',
+                price: 799.95,
+                originalPrice: 899.99,
+                rating: 4.8,
+                reviews: 2341,
+                badge: 'Best Seller',
+                icon: 'fa-coffee'
+            },
+            {
+                title: 'Bowflex SelectTech 552 Dumbbells',
+                category: 'Home Gym',
+                price: 429.00,
+                originalPrice: 499.00,
+                rating: 4.9,
+                reviews: 4521,
+                badge: 'Top Rated',
+                icon: 'fa-dumbbell'
+            },
+            {
+                title: 'Furbo 360° Dog Camera with Treat Tossing',
+                category: 'Pets',
+                price: 199.00,
+                originalPrice: 249.00,
+                rating: 4.6,
+                reviews: 1876,
+                badge: 'Trending',
+                icon: 'fa-paw'
+            },
+            {
+                title: 'Logitech G Pro X Superlight Gaming Mouse',
+                category: 'Gaming',
+                price: 149.99,
+                originalPrice: 159.99,
+                rating: 4.7,
+                reviews: 3422,
+                badge: 'Editor\'s Pick',
+                icon: 'fa-gamepad'
+            },
+            {
+                title: 'Instant Pot Duo Plus 9-in-1',
+                category: 'Kitchen',
+                price: 129.95,
+                originalPrice: 169.95,
+                rating: 4.8,
+                reviews: 5621,
+                badge: 'Best Value',
+                icon: 'fa-utensils'
+            },
+            {
+                title: 'Sony WH-1000XM5 Headphones',
+                category: 'Audio',
+                price: 348.00,
+                originalPrice: 399.99,
+                rating: 4.9,
+                reviews: 8934,
+                badge: 'Premium',
+                icon: 'fa-headphones'
+            }
+        ];
+
+        const blogPosts = [
+            {
+                title: 'The 10 Best Espresso Accessories for 2026',
+                excerpt: 'From precision tampers to temperature-stable kettles, these accessories will elevate your home coffee game to cafe quality.',
+                tag: 'Coffee',
+                readTime: '8 min read',
+                date: 'Apr 18, 2026',
+                icon: 'fa-coffee',
+                gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+            },
+            {
+                title: 'Complete Home Gym Setup Guide for Beginners',
+                excerpt: 'Build a professional-grade workout space for under $500. We compare the best equipment for every fitness goal.',
+                tag: 'Fitness',
+                readTime: '12 min read',
+                date: 'Apr 15, 2026',
+                icon: 'fa-dumbbell',
+                gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                ai: true
+            },
+            {
+                title: 'New Puppy Checklist: Everything You Need',
+                excerpt: 'The essential shopping list for new dog owners, from crates to training treats, vetted by professional trainers.',
+                tag: 'Pets',
+                readTime: '10 min read',
+                date: 'Apr 12, 2026',
+                icon: 'fa-paw',
+                gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+            }
+        ];
+
+        // Render Functions
+        function renderCategories() {
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = categories.map(cat => `
+                <a href="#" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas ${cat.icon}"></i>
+                    </div>
+                    <h3>${cat.name}</h3>
+                    <span>${cat.count}</span>
+                </a>
+            `).join('');
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <span class="product-badge">${product.badge}</span>
+                    <div class="product-image">
+                        <i class="fas ${product.icon}" style="color: #ccc; opacity: 0.5;"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category}</div>
+                        <h3 class="product-title">${product.title}</h3>
+                        <div class="product-meta">
+                            <span class="stars">
+                                ${renderStars(product.rating)}
+                            </span>
+                            <span class="reviews">(${product.reviews.toLocaleString()})</span>
+                        </div>
+                        <div class="product-footer">
+                            <div class="price">
+                                <span class="price-current">$${product.price.toFixed(2)}</span>
+                                <span class="price-original">$${product.originalPrice.toFixed(2)}</span>
+                            </div>
+                            <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                <i class="fas fa-external-link-alt"></i>
+                                View on Amazon
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= rating) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        function renderBlog() {
+            const grid = document.getElementById('blogGrid');
+            grid.innerHTML = blogPosts.map(post => `
+                <article class="blog-card">
+                    <div class="blog-image ${post.ai ? 'ai-generated' : ''}" style="background: ${post.gradient}">
+                        <i class="fas ${post.icon}"></i>
+                        ${post.ai ? '<div style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-robot"></i> AI Generated</div>' : ''}
+                    </div>
+                    <div class="blog-content">
+                        <span class="blog-tag">${post.tag}</span>
+                        <h3 class="blog-title">${post.title}</h3>
+                        <p class="blog-excerpt">${post.excerpt}</p>
+                        <div class="blog-footer">
+                            <span class="read-time">
+                                <i class="far fa-clock"></i>
+                                ${post.readTime}
+                            </span>
+                            <span>${post.date}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Interactions
+        function handleSearch() {
+            const input = document.getElementById('searchInput');
+            const query = input.value.trim();
+            if (query) {
+                // Simulate search
+                input.style.borderColor = 'var(--success)';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    alert(`Searching for: ${query}\n\nIn production, this would filter products and guides across all 47 categories.`);
+                }, 300);
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Animate bars if revenue section
+                    if (entry.target.querySelector('.chart-bar')) {
+                        animateBars();
+                    }
+                }
+            });
+        }, observerOptions);
+
+        function animateBars() {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    const height = bar.getAttribute('data-height');
+                    bar.style.height = height;
+                }, index * 100);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderProducts();
+            renderBlog();
+            
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+            
+            // Search on Enter
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        });
+
+        // Dynamic bar heights reset for animation
+        document.querySelectorAll('.bar').forEach(bar => {
+            bar.style.height = '0';
+            bar.style.transition = 'height 1s ease';
+        });
+    </script>
+</body>
+</html>
